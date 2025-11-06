@@ -46,7 +46,13 @@ const Button: React.FC<ButtonProps> = ({
       {loading ? (
         <ActivityIndicator color={colors.white} />
       ) : (
-        <Text style={[styles.text, textStyle]}>{title}</Text>
+        <Text
+          style={[styles.text, textStyle]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {title}
+        </Text>
       )}
     </TouchableOpacity>
   );
@@ -55,8 +61,9 @@ const Button: React.FC<ButtonProps> = ({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.primary,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
+    minHeight: 48,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',

@@ -5,14 +5,18 @@ import React, {
   useContext,
   ReactNode,
 } from 'react';
-import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import LoadingIndicator from '@components/common/LoadingIndicator';
-import { colors } from '../constants/colors';
-import { View, StyleSheet } from 'react-native';
+
+// Mock user type for Expo Go compatibility
+interface MockUser {
+  uid: string;
+  email: string | null;
+  displayName?: string | null;
+}
 
 interface AuthContextProps {
-  user: FirebaseAuthTypes.User | null;
+  user: MockUser | null;
   isLoading: boolean;
+  logout: () => Promise<void>;
 }
 
 // Create the context with a default value
@@ -21,33 +25,40 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+  const [user, setUser] = useState<MockUser | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   useEffect(() => {
-    // onAuthStateChanged returns an unsubscriber
-    const subscriber = auth().onAuthStateChanged(firebaseUser => {
-      setUser(firebaseUser);
-      if (isAuthLoading) {
-        setIsAuthLoading(false);
-      }
-    });
+    // EXPO GO COMPATIBILITY: Always use mock user for testing
+    // In production build, replace this with real Firebase auth
+    
+    console.log('🔧 Using mock authentication (Expo Go mode)');
+    
+    // Simulate auth initialization delay
+    const timer = setTimeout(() => {
+      console.log('✅ Mock user logged in: test@automonx.com');
+      setUser({
+        uid: 'test-user-123',
+        email: 'test@automonx.com',
+        displayName: 'Test User',
+      });
+      setIsAuthLoading(false);
+    }, 100);
 
-    // Unsubscribe on unmount
-    return subscriber;
-  }, [isAuthLoading]);
+    return () => clearTimeout(timer);
+  }, []);
 
-  // Show a full-screen loader while Firebase auth is initializing
-  if (isAuthLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <LoadingIndicator size="large" color={colors.primary} />
-      </View>
-    );
-  }
+  const logout = async () => {
+    console.log('🔓 Logging out mock user');
+    setUser(null);
+    // In production, add: await firebaseAuth().signOut();
+  };
 
+  console.log('AuthProvider state:', { user: user?.email, isLoading: isAuthLoading });
+
+  // Removed loading screen - directly render children
   return (
-    <AuthContext.Provider value={{ user, isLoading: isAuthLoading }}>
+    <AuthContext.Provider value={{ user, isLoading: isAuthLoading, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -62,12 +73,5 @@ export const useAuth = () => {
   return context;
 };
 
-const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-  },
-});
+export { AuthContext };
 

@@ -5,7 +5,6 @@ import React, {
   ReactNode,
   useEffect,
 } from 'react';
-import { Appearance } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Define the shape of your settings
@@ -112,3 +111,5 @@ export const useSettings = () => {
   }
   return context;
 };
+
+export { SettingsContext };

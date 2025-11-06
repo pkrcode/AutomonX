@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { colors } from '../../constants/colors';
+import { View, Text, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
+import { useThemeColors } from '../../constants/colors';
 // We will also need an icon component later. For now, we'll placeholder it.
 // import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -12,6 +12,7 @@ interface SensorCardProps {
   unit: string;
   status: 'normal' | 'warning' | 'danger';
   onPress?: () => void;
+  style?: ViewStyle;
 }
 
 const SensorCard: React.FC<SensorCardProps> = ({
@@ -20,7 +21,10 @@ const SensorCard: React.FC<SensorCardProps> = ({
   unit,
   status = 'normal',
   onPress,
+  style,
 }) => {
+  const colors = useThemeColors();
+  const styles = createStyles(colors);
   // Get the appropriate color based on the sensor's status
   const getStatusColor = () => {
     switch (status) {
@@ -38,7 +42,7 @@ const SensorCard: React.FC<SensorCardProps> = ({
 
   return (
     <TouchableOpacity 
-      style={styles.container} 
+      style={[styles.container, style]} 
       onPress={onPress} 
       disabled={!onPress}
     >
@@ -47,23 +51,29 @@ const SensorCard: React.FC<SensorCardProps> = ({
           once we install a library like react-native-vector-icons or use SVGs.
         */}
         <View style={[styles.iconPlaceholder, { backgroundColor: statusColor }]} />
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">{title}</Text>
       </View>
       
       <View style={styles.body}>
-        <Text style={[styles.value, { color: statusColor }]}>{value}</Text>
-        <Text style={styles.unit}>{unit}</Text>
+        <Text
+          style={[styles.value, { color: statusColor }]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.7}
+        >
+          {value}
+        </Text>
+        <Text style={styles.unit} numberOfLines={1} ellipsizeMode="tail">{unit}</Text>
       </View>
     </TouchableOpacity>
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     backgroundColor: colors.card,
     borderRadius: 16,
-    padding: 20,
-    margin: 8,
+    padding: 16,
     shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
@@ -72,12 +82,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 5,
-    minWidth: 160, // Ensure cards have a good minimum width
+    minWidth: 150,
+    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   iconPlaceholder: {
     width: 24,
@@ -94,10 +105,10 @@ const styles = StyleSheet.create({
   body: {
     flexDirection: 'row',
     alignItems: 'baseline', // Aligns the value and unit nicely
-    marginTop: 8,
+    marginTop: 4,
   },
   value: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '700',
   },
   unit: {

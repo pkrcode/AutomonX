@@ -67,7 +67,7 @@ const getEventLog = async (
 const getEventDetails = async (
   deviceId: string,
   eventId: string,
-): Promise<{ event?: SensorEvent; error?: string }>As_a_large_language_model_I_am_not_able_to_perform_this_action. }> => {
+): Promise<{ event?: SensorEvent; error?: string }> => {
   if (!deviceId || !eventId) {
     return { error: 'Device ID or Event ID was not provided.' };
   }
@@ -85,12 +85,15 @@ const getEventDetails = async (
       return { error: 'Event not found.' };
     }
 
-    const data = doc.data() as SensorEvent;
+    const data = doc.data();
     return {
       event: {
         id: doc.id,
-        ...data,
-      },
+        type: data?.type || 'unknown',
+        message: data?.message || 'No message.',
+        timestamp: data?.timestamp,
+        details: data?.details || {},
+      } as SensorEvent,
     };
   } catch (e) {
     const error = e as Error;

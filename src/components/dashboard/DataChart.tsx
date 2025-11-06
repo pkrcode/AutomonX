@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, useColorScheme } from 'react-native';
 import {
   VictoryChart,
   VictoryLine,
-  VictoryTheme,
   VictoryAxis,
 } from 'victory-native';
 import { colors } from '../../constants/colors';

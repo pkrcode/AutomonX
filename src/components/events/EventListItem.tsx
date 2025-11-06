@@ -1,16 +1,17 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { colors } from '../../constants/colors';
+import { useThemeColors } from '../../constants/colors';
 
 // We can use an icon placeholder for now
 // import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export interface Event {
   id: string;
-  type: 'alert' | 'warning' | 'info' | 'automation';
+  type: 'alert' | 'warning' | 'info' | 'automation' | 'Security' | 'Sensor' | 'Automation';
   title: string;
-  timestamp: Date; // Or number, if using Firebase timestamp
+  timestamp: Date | any; // Or number, if using Firebase timestamp
   details?: string;
+  description?: string;
 }
 
 interface EventListItemProps {
@@ -19,6 +20,8 @@ interface EventListItemProps {
 }
 
 const EventListItem: React.FC<EventListItemProps> = ({ item, onPress }) => {
+  const colors = useThemeColors();
+  const styles = createStyles(colors);
   const getIconColor = () => {
     switch (item.type) {
       case 'alert':
@@ -58,7 +61,7 @@ const EventListItem: React.FC<EventListItemProps> = ({ item, onPress }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',

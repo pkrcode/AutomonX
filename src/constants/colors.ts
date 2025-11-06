@@ -64,3 +64,24 @@ export const getThemeColors = (isDarkMode: boolean) => ({
   card: isDarkMode ? colors.charcoal : colors.card,
   border: isDarkMode ? colors.borderDark : colors.border,
 });
+
+// Lightweight hook to consume theme-aware colors from SettingsContext
+// Avoids pulling a heavy theming library; works with SettingsContext_Simple
+import { useContext } from 'react';
+import { SettingsContext } from '../context/SettingsContext_Simple';
+
+export const useThemeColors = () => {
+  const ctx = useContext(SettingsContext);
+  const mode = ctx?.settings.theme === 'dark' ? 'dark' : 'light';
+  const dynamic = getThemeColors(mode === 'dark');
+  // Merge base palette with dynamic overrides and ergonomic keys
+  return {
+    ...colors,
+    background: dynamic.background,
+    card: dynamic.card,
+    border: dynamic.border,
+    textPrimary: dynamic.text,
+    textSecondary: dynamic.textSecondary,
+    text: dynamic.text, // alias
+  } as typeof colors & ReturnType<typeof getThemeColors> & { text: string };
+};

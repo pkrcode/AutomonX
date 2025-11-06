@@ -12,8 +12,8 @@ import firestore from '@react-native-firebase/firestore';
 // Import components and constants using path aliases
 import Header from '@components/common/Header';
 import LoadingIndicator from '@components/common/LoadingIndicator';
-import { colors } from '@constants/colors';
-import { globalStyles } from '@constants/styles';
+import { useThemeColors } from '../../constants/colors';
+import { globalStyles } from '../../constants/styles';
 import { AuthContext } from '@context/AuthContext';
 
 // Import the types we defined in EventLogScreen
@@ -33,7 +33,6 @@ type EventDetailScreenProps = NativeStackScreenProps<
 
 const EventDetailScreen: React.FC<EventDetailScreenProps> = ({
   route,
-  navigation,
 }) => {
   const { eventId, eventTitle } = route.params;
   const auth = useContext(AuthContext);
@@ -42,7 +41,7 @@ const EventDetailScreen: React.FC<EventDetailScreenProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!auth.user || !eventId) return;
+    if (!auth?.user || !eventId) return;
 
     // Get the device ID (assumed to be user's UID)
     const deviceId = auth.user.uid;
@@ -73,12 +72,14 @@ const EventDetailScreen: React.FC<EventDetailScreenProps> = ({
     };
 
     getEventDetails();
-  }, [auth.user, eventId]);
+  }, [auth?.user, eventId]);
 
   if (loading) {
-    return <LoadingIndicator message="Loading event details..." />;
+    return <LoadingIndicator fullScreen />;
   }
 
+  const colors = useThemeColors();
+  const styles = createStyles(colors);
   return (
     <SafeAreaView style={styles.container}>
       {/* We can use the eventTitle as a fallback header */}
@@ -113,7 +114,7 @@ const EventDetailScreen: React.FC<EventDetailScreenProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.card,
     borderRadius: 8,
     padding: 20,
-    ...globalStyles.shadow,
+    ...globalStyles.cardShadow,
   },
   detailItem: {
     marginBottom: 15,

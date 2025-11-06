@@ -15,8 +15,8 @@ import { AuthStackParamList } from '@navigation/AuthStack'; // Using path alias
 
 // Import components and constants using path aliases
 import Button from '@components/common/Button';
-import { colors } from '@constants/colors';
-import { globalStyles } from '@constants/styles';
+import { useThemeColors } from '../../constants/colors';
+import { globalStyles } from '../../constants/styles';
 
 // Import services using path aliases
 import { AuthService } from '@services/AuthService';
@@ -39,7 +39,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     setLoading(true);
     setError(null);
 
-    const result = await AuthService.login(email, password);
+    const result = await AuthService.signIn(email, password);
 
     setLoading(false);
 
@@ -52,6 +52,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     // automatically navigate to the main app (MainTabs)
   };
 
+  const colors = useThemeColors();
+  const styles = createStyles(colors);
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -102,7 +104,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -134,7 +136,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     marginBottom: 15,
     fontSize: 16,
-    ...globalStyles.shadow,
+    ...globalStyles.cardShadow,
   },
   errorText: {
     color: colors.danger,

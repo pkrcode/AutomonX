@@ -10,22 +10,13 @@ import firestore, {
   FirebaseFirestoreTypes,
 } from '@react-native-firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 // Import components and constants using path aliases
 import Header from '@components/common/Header';
 import EventListItem from '@components/events/EventListItem';
 import LoadingIndicator from '@components/common/LoadingIndicator';
-import { colors } from '@constants/colors';
+import { useThemeColors } from '../../constants/colors';
 import { AuthContext } from '@context/AuthContext';
-// Import the type for the navigation stack (we'll assume MainTabs has this)
-// You might need to create a dedicated Stack for 'EventLog' and 'EventDetail'
-// For now, we'll just use a generic navigation prop
-type MainStackParamList = {
-  EventDetail: { eventId: string; eventTitle: string };
-  // ... other screens
-};
-type EventLogNavigationProp = NativeStackNavigationProp<MainStackParamList>;
 
 // Define the structure of an Event document in Firestore
 export interface EventData {
@@ -36,15 +27,17 @@ export interface EventData {
   timestamp: FirebaseFirestoreTypes.Timestamp;
 }
 
+// Note: This screen is currently unused in Expo Go builds.
+// Keep props untyped to avoid coupling to drawer route names that may change.
 const EventLogScreen: React.FC = () => {
+  const navigation = useNavigation();
   const auth = useContext(AuthContext);
-  const navigation = useNavigation<EventLogNavigationProp>();
   const [events, setEvents] = useState<EventData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!auth.user) return;
+    if (!auth?.user) return;
 
     // Assumes events are stored in a subcollection under the device's doc
     // e.g., devices/{deviceId}/events
@@ -85,7 +78,7 @@ const EventLogScreen: React.FC = () => {
 
     // Unsubscribe from the listener when the component unmounts
     return () => unsubscribe();
-  }, [auth.user]);
+  }, [auth?.user]);
 
   const handleItemPress = (item: EventData) => {
     // Navigate to a detail screen (which we'll create next)
@@ -97,12 +90,19 @@ const EventLogScreen: React.FC = () => {
   };
 
   if (loading) {
-    return <LoadingIndicator message="Loading event log..." />;
+    return <LoadingIndicator fullScreen />;
   }
 
+  const colors = useThemeColors();
+  const styles = createStyles(colors);
   return (
     <SafeAreaView style={styles.container}>
-      <Header title="Event Log" />
+      <Header 
+        title="Event Log"
+        rightIcon="back"
+        onRightPress={() => navigation.goBack()}
+        onLogoPress={() => navigation.navigate('Dashboard' as never)}
+      />
       {error && (
         <View style={styles.centered}>
           <Text style={styles.errorText}>{error}</Text>
@@ -118,9 +118,7 @@ const EventLogScreen: React.FC = () => {
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
           <EventListItem
-            title={item.title}
-            // Format the Firestore timestamp
-            timestamp={item.timestamp.toDate().toLocaleString()}
+            item={item}
             onPress={() => handleItemPress(item)}
           />
         )}
@@ -130,7 +128,7 @@ const EventLogScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

@@ -1,28 +1,46 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { useAuth } from '@context/AuthContext'; // Using path alias
 import { AuthStack } from './AuthStack';
-import { MainTabs } from './MainTabs';
-import LoadingIndicator from '@components/common/LoadingIndicator'; // Using path alias
-import { colors } from '@constants/colors'; // Using path alias
+import { MainDrawer } from './MainDrawer';
 import { View, StyleSheet } from 'react-native';
+import { useThemeColors } from '../constants/colors';
+import SplashIntro from '@components/common/SplashIntro';
+import ErrorBoundary from '@components/common/ErrorBoundary';
 
 export const AppNavigator = () => {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
+  const colors = useThemeColors();
+
+  // Create a navigation theme that matches our app theme to avoid white flashes
+  const navTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      primary: colors.primary,
+      background: colors.background,
+      card: colors.card,
+      text: colors.textPrimary,
+      border: colors.border,
+      notification: colors.danger,
+    },
+  } as const;
 
   // Show a loading screen while auth state is being checked
-  if (loading) {
+  if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <LoadingIndicator size="large" />
+      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+        <ErrorBoundary>
+          <SplashIntro />
+        </ErrorBoundary>
       </View>
     );
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={navTheme}>
       {/* If user is logged in, show main app. Otherwise, show login screen. */}
-      {user ? <MainTabs /> : <AuthStack />}
+      {user ? <MainDrawer /> : <AuthStack />}
     </NavigationContainer>
   );
 };
@@ -32,6 +50,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.background,
+    backgroundColor: 'transparent',
   },
 });

@@ -1,1 +1,68 @@
-node_modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# React Native / Expo
+.expo/
+.expo-shared/
+
+# Metro / Cache
+.cache/
+
+# Build outputs
+build/
+dist/
+tmp/
+temp/
+
+# Android
+android/.gradle/
+android/.idea/
+android/local.properties
+android/app/build/
+android/build/
+android/app/release/
+android/app/debug.keystore
+
+# iOS (if present)
+ios/
+*.xcworkspace
+*.xcuserdatad
+Pods/
+
+# VS Code
+.vscode/
+.history/
+
+# Environment / Secrets
+.env
+*.env
+scripts/bridge.env
+serviceAccountKey.json
+google-services.json
+android/app/google-services.json
+
+# Coverage
+coverage/
+
+# OS files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+$RECYCLE.BIN/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Misc
+npm-cache/

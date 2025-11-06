@@ -1,15 +1,30 @@
 {
   "expo": {
-    "name": "AutomonX",
+  "name": "AutomonX-VLSI",
     "slug": "automonx",
     "version": "1.0.0",
     "assetBundlePatterns": ["**/*"],
-    "platforms": ["ios", "android"],
+    "platforms": ["ios", "android", "web"],
+    "icon": "./assets/images/logo.png",
+    "splash": {
+      "image": "./assets/images/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
     "android": {
-      "package": "com.automonx.app"
+      "package": "com.automonx.app",
+      "googleServicesFile": "./google-services.json",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/logo.png",
+        "backgroundColor": "#FFFFFF",
+        "monochromeImage": "./assets/images/logo.png"
+      }
     },
     "ios": {
-      "supportsTabletMode": true
-    }
+      "supportsTablet": true
+    },
+    "plugins": [
+      "@react-native-firebase/app"
+    ]
   }
 }

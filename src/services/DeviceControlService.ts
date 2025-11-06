@@ -1,58 +1,59 @@
-import auth, {
-  FirebaseAuthTypes,
-} from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
-// --- Sign Up ---
-export const signUp = async (
-  email: string,
-  pass: string,
-): Promise<{ user?: FirebaseAuthTypes.User; error?: string }> => {
+/**
+ * Service for controlling device automations and settings
+ */
+
+/**
+ * Update a specific automation setting for a device
+ * @param deviceId The device document ID in Firestore
+ * @param automationId The automation field to update (e.g., 'fan', 'lights', 'doorLock')
+ * @param value The new value (true/false)
+ */
+const updateAutomation = async (
+  deviceId: string,
+  automationId: string,
+  value: boolean,
+): Promise<{ success: boolean; error?: string }> => {
   try {
-    const userCredential = await auth().createUserWithEmailAndPassword(
-      email,
-      pass,
-    );
-    // You could also set a display name here if you have it
-    // await userCredential.user.updateProfile({ displayName: 'New User' });
-
-    return { user: userCredential.user };
+    await firestore()
+      .collection('devices')
+      .doc(deviceId)
+      .update({
+        [`automations.${automationId}`]: value,
+      });
+    return { success: true };
   } catch (e) {
-    const error = e as FirebaseAuthTypes.FirebaseAuthError;
-    return { error: error.message || 'Failed to sign up.' };
+    const error = e as Error;
+    return { success: false, error: error.message || 'Failed to update automation.' };
   }
 };
 
-// --- Sign In ---
-export const signIn = async (
-  email: string,
-  pass: string,
-): Promise<{ user?: FirebaseAuthTypes.User; error?: string }> => {
+/**
+ * Update device settings or sensor thresholds
+ * @param deviceId The device document ID
+ * @param settings Object containing settings to update
+ */
+const updateDeviceSettings = async (
+  deviceId: string,
+  settings: Record<string, any>,
+): Promise<{ success: boolean; error?: string }> => {
   try {
-    const userCredential = await auth().signInWithEmailAndPassword(
-      email,
-      pass,
-    );
-    return { user: userCredential.user };
+    await firestore()
+      .collection('devices')
+      .doc(deviceId)
+      .update(settings);
+    return { success: true };
   } catch (e) {
-    const error = e as FirebaseAuthTypes.FirebaseAuthError;
-    return { error: error.message || 'Failed to sign in.' };
+    const error = e as Error;
+    return { success: false, error: error.message || 'Failed to update settings.' };
   }
 };
 
-// --- Sign Out ---
-export const signOut = async (): Promise<{ error?: string }> => {
-  try {
-    await auth().signOut();
-    return {};
-  } catch (e) {
-    const error = e as FirebaseAuthTypes.FirebaseAuthError;
-    return { error: error.message || 'Failed to sign out.' };
-  }
+// Export as default object
+const DeviceControlService = {
+  updateAutomation,
+  updateDeviceSettings,
 };
 
-// We can export them as a single service object
-export const AuthService = {
-  signUp,
-  signIn,
-  signOut,
-};
+export default DeviceControlService;

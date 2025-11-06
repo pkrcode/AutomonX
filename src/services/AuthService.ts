@@ -17,7 +17,7 @@ export const signUp = async (
 
     return { user: userCredential.user };
   } catch (e) {
-    const error = e as FirebaseAuthTypes.FirebaseAuthError;
+    const error = e as Error;
     return { error: error.message || 'Failed to sign up.' };
   }
 };
@@ -34,7 +34,7 @@ export const signIn = async (
     );
     return { user: userCredential.user };
   } catch (e) {
-    const error = e as FirebaseAuthTypes.FirebaseAuthError;
+    const error = e as Error;
     return { error: error.message || 'Failed to sign in.' };
   }
 };
@@ -45,7 +45,7 @@ export const signOut = async (): Promise<{ error?: string }> => {
     await auth().signOut();
     return {};
   } catch (e) {
-    const error = e as FirebaseAuthTypes.FirebaseAuthError;
+    const error = e as Error;
     return { error: error.message || 'Failed to sign out.' };
   }
 };
